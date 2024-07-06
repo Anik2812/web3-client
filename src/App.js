@@ -14,17 +14,33 @@ function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showResults, setShowResults] = useState({});
+  const [showCreatePoll, setShowCreatePoll] = useState(false);
+  const [connectedAccount, setConnectedAccount] = useState('');
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Connect directly to Ganache
-        const ganacheProvider = new Web3.providers.HttpProvider("http://127.0.0.1:8545");
-        const web3Instance = new Web3(ganacheProvider);
+        // Connect to Web3
+        let web3Instance;
+        if (window.ethereum) {
+          web3Instance = new Web3(window.ethereum);
+          try {
+            // Request account access
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+          } catch (error) {
+            console.error("User denied account access");
+          }
+        } else if (window.web3) {
+          web3Instance = new Web3(window.web3.currentProvider);
+        } else {
+          console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+          return;
+        }
         setWeb3(web3Instance);
 
         const accs = await web3Instance.eth.getAccounts();
         setAccounts(accs);
+        setConnectedAccount(accs[0]);
 
         const networkId = await web3Instance.eth.net.getId();
         console.log("Connected to network ID:", networkId);
@@ -144,25 +160,43 @@ function App() {
       <header className="App-header">
         <h1>DemocraDApp</h1>
         <p>Decentralized Voting Platform</p>
+        {connectedAccount && (
+          <div className="connected-account">
+            Connected: {connectedAccount.slice(0, 6)}...{connectedAccount.slice(-4)}
+          </div>
+        )}
       </header>
       {error && <p className="error">{error}</p>}
       {loading && <div className="loading"><div></div><div></div><div></div><div></div></div>}
-      <div className="create-poll">
-        <h2>Create New Poll</h2>
-        <input
-          type="text"
-          placeholder="Poll question"
-          value={newPollQuestion}
-          onChange={(e) => setNewPollQuestion(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Options (comma-separated)"
-          value={newPollOptions}
-          onChange={(e) => setNewPollOptions(e.target.value)}
-        />
-        <button onClick={createPoll} className="create-btn">Create Poll</button>
-      </div>
+      
+      <button onClick={() => setShowCreatePoll(!showCreatePoll)} className="toggle-create-poll">
+        {showCreatePoll ? 'Hide Create Poll' : 'Create New Poll'}
+      </button>
+
+      <CSSTransition
+        in={showCreatePoll}
+        timeout={300}
+        classNames="fade"
+        unmountOnExit
+      >
+        <div className="create-poll">
+          <h2>Create New Poll</h2>
+          <input
+            type="text"
+            placeholder="Poll question"
+            value={newPollQuestion}
+            onChange={(e) => setNewPollQuestion(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Options (comma-separated)"
+            value={newPollOptions}
+            onChange={(e) => setNewPollOptions(e.target.value)}
+          />
+          <button onClick={createPoll} className="create-btn">Create Poll</button>
+        </div>
+      </CSSTransition>
+
       <div className="active-polls">
         <h2>Active Polls</h2>
         <TransitionGroup>
@@ -198,7 +232,7 @@ function App() {
                         <div className="result-label">{option}: {poll.votes[index]} votes</div>
                         <div 
                           className="result-fill" 
-                          style={{width: `${(poll.votes[index] / Math.max(...poll.votes)) * 100}%`}}
+                          style={{width: `${(poll.votes[index] / Math.max(...poll.votes, 1)) * 100}%`}}
                         ></div>
                       </div>
                     ))}

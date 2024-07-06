@@ -1,13 +1,18 @@
 /* App.css */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --primary-color: #6c5ce7;
-  --secondary-color: #00b894;
-  --background-color: #2d3436;
-  --surface-color: #34495e;
-  --text-color: #ecf0f1;
-  --error-color: #e74c3c;
+  --primary-color: #00f5d4;
+  --secondary-color: #7b2cbf;
+  --background-color: #0a0e17;
+  --surface-color: #1a1f2e;
+  --text-color: #e0e0e0;
+  --error-color: #ff4d6d;
+  --success-color: #06d6a0;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -17,11 +22,12 @@ body {
   margin: 0;
   padding: 0;
   transition: background-color 0.3s ease;
+  font-size: 16px;
 }
 
 .App {
   text-align: center;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -29,127 +35,152 @@ body {
 .App-header {
   background-color: var(--surface-color);
   padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  border-radius: 15px;
+  margin-bottom: 30px;
   color: var(--text-color);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s ease;
 }
 
 h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-family: 'Share Tech Mono', monospace;
+  text-shadow: 0 0 10px var(--primary-color);
+  letter-spacing: 2px;
 }
 
 h2 {
   color: var(--primary-color);
   margin-bottom: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.8rem;
 }
 
 .create-poll, .active-polls {
   background: var(--surface-color);
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 20px;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s ease;
 }
 
 input {
   display: block;
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 5px;
-  border: 1px solid #4a69bd;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 10px;
+  border: 1px solid var(--primary-color);
   font-size: 1rem;
-  background-color: var(--background-color);
+  background-color: rgba(10, 14, 23, 0.8);
   color: var(--text-color);
   transition: all 0.3s ease;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 input:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+  box-shadow: 0 0 0 2px var(--primary-color);
 }
 
 button {
   background: var(--primary-color);
-  color: white;
+  color: var(--background-color);
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  padding: 12px 20px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 10px 0;
 }
 
 button:hover {
   background: var(--secondary-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 245, 212, 0.4);
 }
 
 button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 245, 212, 0.4);
 }
 
 button:disabled {
-  background: #636e72;
+  background: #2c3e50;
   cursor: not-allowed;
+  color: #95a5a6;
 }
 
 .poll {
   background: var(--surface-color);
-  border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 15px;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 25px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .poll:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 40px rgba(0, 245, 212, 0.2);
 }
 
 .poll h3 {
   color: var(--primary-color);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.4rem;
 }
 
 .options-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
 }
 
 .option-button {
-  flex: 1 1 calc(50% - 10px);
+  flex: 1 1 calc(50% - 15px);
   min-width: 150px;
+  background-color: rgba(10, 14, 23, 0.8);
+  color: var(--text-color);
+  border: 1px solid var(--primary-color);
 }
 
 .vote-count {
   display: block;
-  font-size: 0.8rem;
-  margin-top: 5px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  color: var(--primary-color);
 }
 
 .close-poll-button, .show-results-button {
-  margin-top: 10px;
+  margin-top: 20px;
   background: var(--secondary-color);
 }
 
 .error {
   background: var(--error-color);
   color: white;
-  padding: 10px;
-  border-radius: 5px;
+  padding: 15px;
+  border-radius: 10px;
   margin-bottom: 1rem;
+  font-weight: bold;
 }
 
 .loading {
@@ -172,49 +203,159 @@ button:disabled {
   border-color: var(--primary-color) transparent transparent transparent;
 }
 
-.loading div:nth-child(1) {
-  animation-delay: -0.45s;
-}
-
-.loading div:nth-child(2) {
-  animation-delay: -0.3s;
-}
-
-.loading div:nth-child(3) {
-  animation-delay: -0.15s;
-}
+.loading div:nth-child(1) { animation-delay: -0.45s; }
+.loading div:nth-child(2) { animation-delay: -0.3s; }
+.loading div:nth-child(3) { animation-delay: -0.15s; }
 
 @keyframes loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .results {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .result-bar {
-  margin-bottom: 10px;
-  background: var(--background-color);
-  border-radius: 5px;
+  margin-bottom: 15px;
+  background: rgba(10, 14, 23, 0.8);
+  border-radius: 10px;
   overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .result-label {
-  padding: 5px;
+  padding: 10px;
   color: var(--text-color);
+  font-weight: bold;
 }
 
 .result-fill {
-  background: var(--secondary-color);
-  height: 20px;
+  background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+  height: 30px;
   transition: width 0.5s ease-in-out;
 }
 
+.blockchain-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(0, 245, 212, 0.1) 0%, transparent 20%),
+    radial-gradient(circle at 90% 80%, rgba(123, 44, 191, 0.1) 0%, transparent 20%),
+    linear-gradient(135deg, #0a0e17 0%, #1a1f2e 100%);
+  opacity: 1;
+  z-index: -1;
+}
+
+.toggle-create-poll {
+  margin-bottom: 30px;
+  background-color: var(--secondary-color);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.1rem;
+  padding: 15px 30px;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(123, 44, 191, 0.4);
+}
+
+.connected-account {
+  background-color: rgba(10, 14, 23, 0.8);
+  color: var(--primary-color);
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  margin-top: 15px;
+  display: inline-block;
+  border: 1px solid var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .App {
+    max-width: 95%;
+  }
+}
+
+@media (max-width: 992px) {
+  body {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .poll h3 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .App {
+    padding: 15px;
+  }
+
+  .options-container {
+    flex-direction: column;
+  }
+
+  .option-button {
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .toggle-create-poll {
+    font-size: 1rem;
+    padding: 12px 25px;
+  }
+
+  .poll {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  body {
+    font-size: 12px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .poll h3 {
+    font-size: 1.2rem;
+  }
+
+  .App-header, .create-poll, .active-polls {
+    padding: 15px;
+  }
+
+  input, button {
+    font-size: 0.9rem;
+  }
+
+  .connected-account {
+    font-size: 0.8rem;
+    padding: 8px 15px;
+  }
+}
+
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -273,52 +414,4 @@ button:disabled {
 
 .poll {
   animation: fadeIn 0.5s ease-out;
-}
-
-.blockchain-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-  opacity: 0.1;
-  z-index: -1;
-}
-
-.toggle-create-poll {
-  margin-bottom: 20px;
-  background-color: var(--secondary-color);
-}
-
-.fade-enter {
-  opacity: 0;
-}
-
-.fade-enter-active {
-  opacity: 1;
-  transition: opacity 300ms ease-in;
-}
-
-.fade-exit {
-  opacity: 1;
-}
-
-.fade-exit-active {
-  opacity: 0;
-  transition: opacity 300ms ease-in;
-}
-
-@media (max-width: 600px) {
-  .App {
-    padding: 10px;
-  }
-
-  .options-container {
-    flex-direction: column;
-  }
-
-  .option-button {
-    width: 100%;
-  }
 }
