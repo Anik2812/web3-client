@@ -1,128 +1,135 @@
-/* App.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+body {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: #e94560;
+  font-family: 'Roboto', sans-serif;
+}
+
 .App {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2c2c4e); /* Dark gradient background */
-  color: #e0e0e0;
   text-align: center;
-  padding: 30px;
-  max-width: 900px;
-  margin: 20px auto;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Softer shadow */
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-/* Header */
 h1 {
-  color: #4a90e2; /* Light blue color */
-  font-size: 2.5em;
-  margin-bottom: 20px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle text shadow */
+  font-size: 3rem;
+  color: #0f3460;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
 }
 
-/* Error Messages */
+.create-poll, .active-polls {
+  background: rgba(15, 52, 96, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.create-poll:hover, .active-polls:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+input, button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: none;
+  font-size: 1rem;
+}
+
+input {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+button {
+  background: #e94560;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #0f3460;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.poll {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.poll:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.poll h3 {
+  color: #0f3460;
+  margin-bottom: 10px;
+}
+
+.option-button {
+  display: inline-block;
+  width: auto;
+  margin: 5px;
+  background: #0f3460;
+}
+
+.option-button:hover {
+  background: #e94560;
+}
+
+.close-poll-button {
+  background: #e94560;
+  margin-top: 10px;
+}
+
 .error {
-  color: #e53935; /* Red for errors */
-  margin-bottom: 20px;
-  font-size: 1.1em;
+  background: rgba(233, 69, 96, 0.2);
+  color: #e94560;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 1rem;
 }
 
-/* Loading Spinner */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.2);
-  border-top: 4px solid #4a90e2;
+.loading {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255,255,255,.3);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
+  border-top-color: #e94560;
+  animation: spin 1s ease-in-out infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Contract Address Section */
-.contract-address {
-  background: #1c1c2b;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  color: #e0e0e0;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Darker shadow */
-}
-
-.contract-address p {
-  margin: 10px 0;
-  font-size: 1.1em;
-}
-
-/* Create Poll Section */
-.create-poll-section {
-  background: #2a2a3b;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Darker shadow */
-}
-
-.create-poll-section h2 {
-  margin-bottom: 15px;
-  color: #4a90e2; /* Light blue color */
-}
-
-/* Inputs and Buttons */
-input[type="text"] {
+.blockchain-background {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  padding: 12px;
-  border: 1px solid #444;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-  background: #2c2c4e; /* Dark input background */
-  color: #e0e0e0;
-}
-
-.create-poll-button {
-  background: #4CAF50;
-  color: white;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.create-poll-button:hover {
-  background: #45a049;
-  transform: scale(1.05); /* Slightly enlarge on hover */
-}
-
-/* Polls Section */
-.polls-section {
-  margin-top: 30px;
-}
-
-/* Spinner for Loading */
-.spinner {
-  border: 4px solid rgba(0, 0, 0, 0.2);
-  border-top: 4px solid #4a90e2;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  animation: spin 1s linear infinite;
-  margin: 20px auto;
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 768px) {
-  .App {
-    padding: 20px;
-    margin: 10px;
-  }
-  .create-poll-section,
-  .contract-address {
-    padding: 15px;
-  }
+  height: 100%;
+  z-index: -1;
+  opacity: 0.1;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cpath fill="%23e94560" d="M31.6,3.5C5.9,13.6-6.6,42.7,3.5,68.4c10.1,25.7,39.2,38.3,64.9,28.1l-3.1-7.9c-21.3,8.4-45.4-2-53.8-23.3 c-8.4-21.3,2-45.4,23.3-53.8L31.6,3.5z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="2s" from="0 50 50" to="360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3Cpath fill="%230f3460" d="M42.3,39.6c5.7-4.3,13.9-3.1,18.1,2.7c4.3,5.7,3.1,13.9-2.7,18.1l4.1,5.5c8.8-6.5,10.6-19,4.1-27.7 c-6.5-8.8-19-10.6-27.7-4.1L42.3,39.6z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="-360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3Cpath fill="%23e94560" d="M82,35.7C74.1,18,53.4,10.1,35.7,18S10.1,46.6,18,64.3l7.6-3.4c-6-13.5,0-29.3,13.5-35.3s29.3,0,35.3,13.5 L82,35.7z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="2s" from="0 50 50" to="360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }

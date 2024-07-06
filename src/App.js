@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import TruffleContract from '@truffle/contract';
 import VotingArtifact from './contracts/Voting.json';
-import PollCard from './PollCard';
 import './App.css';
 
 function App() {
@@ -13,41 +12,39 @@ function App() {
   const [newPollQuestion, setNewPollQuestion] = useState('');
   const [newPollOptions, setNewPollOptions] = useState('');
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [contractAddress, setContractAddress] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
       try {
-        if (window.ethereum) {
-          const web3Instance = new Web3(window.ethereum);
-          setWeb3(web3Instance);
+        // Connect directly to Ganache
+        const ganacheProvider = new Web3.providers.HttpProvider("http://127.0.0.1:8545");
+        const web3Instance = new Web3(ganacheProvider);
+        setWeb3(web3Instance);
 
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const accs = await web3Instance.eth.getAccounts();
+        setAccounts(accs);
 
-          const accs = await web3Instance.eth.getAccounts();
-          setAccounts(accs);
+        const VotingContract = TruffleContract(VotingArtifact);
+        VotingContract.setProvider(ganacheProvider);
 
-          const VotingContract = TruffleContract(VotingArtifact);
-          VotingContract.setProvider(web3Instance.currentProvider);
-
-          const networkId = await web3Instance.eth.net.getId();
-          const deployedNetwork = VotingArtifact.networks[networkId];
-          if (!deployedNetwork) {
-            throw new Error(`Contract not deployed on network ${networkId}`);
-          }
-
-          const instance = await VotingContract.at(deployedNetwork.address);
-          setVotingContract(instance);
-          setContractAddress(deployedNetwork.address);
-
-          await loadPolls(instance);
-        } else {
-          setError('Please install MetaMask!');
+        const networkId = await web3Instance.eth.net.getId();
+        console.log("Connected to network ID:", networkId);
+        
+        const deployedNetwork = VotingArtifact.networks[networkId.toString()];
+        if (!deployedNetwork) {
+          throw new Error(`Contract not deployed on network ${networkId}`);
         }
+
+        const instance = await VotingContract.at(deployedNetwork.address);
+        setVotingContract(instance);
+
+        await loadPolls(instance);
       } catch (error) {
         console.error("Error initializing Web3:", error);
         setError(`Error initializing Web3: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -55,7 +52,6 @@ function App() {
   }, []);
 
   const loadPolls = async (contractInstance) => {
-    setLoading(true);
     try {
       const pollCount = await contractInstance.pollCount();
       const loadedPolls = [];
@@ -73,8 +69,6 @@ function App() {
     } catch (error) {
       console.error("Error loading polls:", error);
       setError(`Error loading polls: ${error.message}`);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -90,7 +84,7 @@ function App() {
     try {
       setLoading(true);
       const options = newPollOptions.split(',').map(option => option.trim());
-      await votingContract.createPoll(newPollQuestion, options, { from: accounts[0] });
+      await votingContract.createPoll(newPollQuestion, options, { from: accounts[0], gas: 3000000 });
       setNewPollQuestion('');
       setNewPollOptions('');
       await loadPolls(votingContract);
@@ -110,7 +104,7 @@ function App() {
     }
     try {
       setLoading(true);
-      await votingContract.vote(pollId, optionId, { from: accounts[0] });
+      await votingContract.vote(pollId, optionId, { from: accounts[0], gas: 3000000 });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
@@ -128,7 +122,7 @@ function App() {
     }
     try {
       setLoading(true);
-      await votingContract.closePoll(pollId, { from: accounts[0] });
+      await votingContract.closePoll(pollId, { from: accounts[0], gas: 3000000 });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
@@ -141,16 +135,11 @@ function App() {
 
   return (
     <div className="App">
+      <div className="blockchain-background"></div>
       <h1>DemocraDApp</h1>
       {error && <p className="error">{error}</p>}
-      {loading && <div className="spinner"></div>}
-      {contractAddress && (
-        <div className="contract-address">
-          <p><strong>Contract Address:</strong> {contractAddress}</p>
-          <p>Use this address to interact with the contract or check it on a blockchain explorer.</p>
-        </div>
-      )}
-      <div className="create-poll-section">
+      {loading && <div className="loading"></div>}
+      <div className="create-poll">
         <h2>Create New Poll</h2>
         <input
           type="text"
@@ -164,19 +153,27 @@ function App() {
           value={newPollOptions}
           onChange={(e) => setNewPollOptions(e.target.value)}
         />
-        <button onClick={createPoll} className="create-poll-button">
-          <i className="fas fa-plus"></i> Create Poll
-        </button>
+        <button onClick={createPoll}>Create Poll</button>
       </div>
-      <div className="polls-section">
+      <div className="active-polls">
         <h2>Active Polls</h2>
         {polls.map(poll => (
-          <PollCard
-            key={poll.id}
-            poll={poll}
-            onVote={vote}
-            onClose={closePoll}
-          />
+          <div key={poll.id} className="poll">
+            <h3>{poll.question}</h3>
+            {poll.options.map((option, index) => (
+              <button
+                key={index}
+                className="option-button"
+                onClick={() => vote(poll.id, index)}
+                disabled={!poll.active}
+              >
+                {option} ({poll.votes[index]} votes)
+              </button>
+            ))}
+            {poll.active && (
+              <button className="close-poll-button" onClick={() => closePoll(poll.id)}>Close Poll</button>
+            )}
+          </div>
         ))}
       </div>
     </div>
