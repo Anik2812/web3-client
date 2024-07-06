@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
 import TruffleContract from '@truffle/contract';
 import VotingArtifact from './contracts/Voting.json';
+import PollCard from './PollCard';
 import './App.css';
 
 function App() {
@@ -12,23 +13,21 @@ function App() {
   const [newPollQuestion, setNewPollQuestion] = useState('');
   const [newPollOptions, setNewPollOptions] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [contractAddress, setContractAddress] = useState('');
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Initialize Web3
         if (window.ethereum) {
           const web3Instance = new Web3(window.ethereum);
           setWeb3(web3Instance);
 
-          // Request account access
           await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-          // Get user accounts
           const accs = await web3Instance.eth.getAccounts();
           setAccounts(accs);
 
-          // Initialize contract
           const VotingContract = TruffleContract(VotingArtifact);
           VotingContract.setProvider(web3Instance.currentProvider);
 
@@ -40,10 +39,8 @@ function App() {
 
           const instance = await VotingContract.at(deployedNetwork.address);
           setVotingContract(instance);
+          setContractAddress(deployedNetwork.address);
 
-          console.log('Contract instance:', instance);
-
-          // Load polls
           await loadPolls(instance);
         } else {
           setError('Please install MetaMask!');
@@ -58,9 +55,9 @@ function App() {
   }, []);
 
   const loadPolls = async (contractInstance) => {
+    setLoading(true);
     try {
       const pollCount = await contractInstance.pollCount();
-      console.log('Poll count:', pollCount.toNumber());
       const loadedPolls = [];
       for (let i = 1; i <= pollCount.toNumber(); i++) {
         const poll = await contractInstance.getPoll(i);
@@ -76,6 +73,8 @@ function App() {
     } catch (error) {
       console.error("Error loading polls:", error);
       setError(`Error loading polls: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,6 +88,7 @@ function App() {
       return;
     }
     try {
+      setLoading(true);
       const options = newPollOptions.split(',').map(option => option.trim());
       await votingContract.createPoll(newPollQuestion, options, { from: accounts[0] });
       setNewPollQuestion('');
@@ -98,6 +98,8 @@ function App() {
     } catch (error) {
       console.error("Error creating poll:", error);
       setError(`Error creating poll: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,12 +109,15 @@ function App() {
       return;
     }
     try {
+      setLoading(true);
       await votingContract.vote(pollId, optionId, { from: accounts[0] });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
       console.error("Error voting:", error);
       setError(`Error voting: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,20 +127,30 @@ function App() {
       return;
     }
     try {
+      setLoading(true);
       await votingContract.closePoll(pollId, { from: accounts[0] });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
       console.error("Error closing poll:", error);
       setError(`Error closing poll: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="App">
       <h1>DemocraDApp</h1>
-      {error && <p style={{color: 'red'}}>{error}</p>}
-      <div>
+      {error && <p className="error">{error}</p>}
+      {loading && <div className="spinner"></div>}
+      {contractAddress && (
+        <div className="contract-address">
+          <p><strong>Contract Address:</strong> {contractAddress}</p>
+          <p>Use this address to interact with the contract or check it on a blockchain explorer.</p>
+        </div>
+      )}
+      <div className="create-poll-section">
         <h2>Create New Poll</h2>
         <input
           type="text"
@@ -149,24 +164,19 @@ function App() {
           value={newPollOptions}
           onChange={(e) => setNewPollOptions(e.target.value)}
         />
-        <button onClick={createPoll}>Create Poll</button>
+        <button onClick={createPoll} className="create-poll-button">
+          <i className="fas fa-plus"></i> Create Poll
+        </button>
       </div>
-      <div>
+      <div className="polls-section">
         <h2>Active Polls</h2>
         {polls.map(poll => (
-          <div key={poll.id}>
-            <h3>{poll.question}</h3>
-            {poll.options.map((option, index) => (
-              <div key={index}>
-                <button onClick={() => vote(poll.id, index)} disabled={!poll.active}>
-                  {option} ({poll.votes[index]} votes)
-                </button>
-              </div>
-            ))}
-            {poll.active && (
-              <button onClick={() => closePoll(poll.id)}>Close Poll</button>
-            )}
-          </div>
+          <PollCard
+            key={poll.id}
+            poll={poll}
+            onVote={vote}
+            onClose={closePoll}
+          />
         ))}
       </div>
     </div>
