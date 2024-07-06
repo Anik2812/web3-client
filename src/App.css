@@ -1,9 +1,22 @@
+/* App.css */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
+:root {
+  --primary-color: #6c5ce7;
+  --secondary-color: #00b894;
+  --background-color: #2d3436;
+  --surface-color: #34495e;
+  --text-color: #ecf0f1;
+  --error-color: #e74c3c;
+}
+
 body {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  color: #e94560;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease;
 }
 
 .App {
@@ -13,94 +26,127 @@ body {
   padding: 20px;
 }
 
-h1 {
-  font-size: 3rem;
-  color: #0f3460;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  margin-bottom: 2rem;
-}
-
-.create-poll, .active-polls {
-  background: rgba(15, 52, 96, 0.2);
-  border-radius: 10px;
+.App-header {
+  background-color: var(--surface-color);
   padding: 20px;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: var(--text-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
-.create-poll:hover, .active-polls:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-input, button {
+h2 {
+  color: var(--primary-color);
+  margin-bottom: 20px;
+}
+
+.create-poll, .active-polls {
+  background: var(--surface-color);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+input {
   display: block;
   width: 100%;
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
-  border: none;
+  border: 1px solid #4a69bd;
   font-size: 1rem;
-}
-
-input {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-button {
-  background: #e94560;
-  color: #fff;
-  cursor: pointer;
+  background-color: var(--background-color);
+  color: var(--text-color);
   transition: all 0.3s ease;
 }
 
+input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+}
+
+button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
 button:hover {
-  background: #0f3460;
+  background: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 button:disabled {
-  background: #ccc;
+  background: #636e72;
   cursor: not-allowed;
 }
 
 .poll {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-color);
   border-radius: 10px;
   padding: 15px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .poll:hover {
-  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .poll h3 {
-  color: #0f3460;
+  color: var(--primary-color);
   margin-bottom: 10px;
 }
 
+.options-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
 .option-button {
-  display: inline-block;
-  width: auto;
-  margin: 5px;
-  background: #0f3460;
+  flex: 1 1 calc(50% - 10px);
+  min-width: 150px;
 }
 
-.option-button:hover {
-  background: #e94560;
+.vote-count {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 
-.close-poll-button {
-  background: #e94560;
+.close-poll-button, .show-results-button {
   margin-top: 10px;
+  background: var(--secondary-color);
 }
 
 .error {
-  background: rgba(233, 69, 96, 0.2);
-  color: #e94560;
+  background: var(--error-color);
+  color: white;
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 1rem;
@@ -108,28 +154,171 @@ button:disabled {
 
 .loading {
   display: inline-block;
-  width: 50px;
-  height: 50px;
-  border: 3px solid rgba(255,255,255,.3);
-  border-radius: 50%;
-  border-top-color: #e94560;
-  animation: spin 1s ease-in-out infinite;
+  position: relative;
+  width: 80px;
+  height: 80px;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.loading div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid var(--primary-color);
+  border-radius: 50%;
+  animation: loading 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: var(--primary-color) transparent transparent transparent;
+}
+
+.loading div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.loading div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.loading div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.results {
+  margin-top: 20px;
+}
+
+.result-bar {
+  margin-bottom: 10px;
+  background: var(--background-color);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.result-label {
+  padding: 5px;
+  color: var(--text-color);
+}
+
+.result-fill {
+  background: var(--secondary-color);
+  height: 20px;
+  transition: width 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.poll-enter {
+  opacity: 0;
+  transform: scale(0.9) translateY(-20px);
+}
+
+.poll-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.poll-exit {
+  opacity: 1;
+}
+
+.poll-exit-active {
+  opacity: 0;
+  transform: scale(0.9) translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.results-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.results-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.results-exit {
+  opacity: 1;
+}
+
+.results-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.App-header, .create-poll, .active-polls {
+  animation: slideIn 0.5s ease-out;
+}
+
+.poll {
+  animation: fadeIn 0.5s ease-out;
 }
 
 .blockchain-background {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   opacity: 0.1;
-  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cpath fill="%23e94560" d="M31.6,3.5C5.9,13.6-6.6,42.7,3.5,68.4c10.1,25.7,39.2,38.3,64.9,28.1l-3.1-7.9c-21.3,8.4-45.4-2-53.8-23.3 c-8.4-21.3,2-45.4,23.3-53.8L31.6,3.5z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="2s" from="0 50 50" to="360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3Cpath fill="%230f3460" d="M42.3,39.6c5.7-4.3,13.9-3.1,18.1,2.7c4.3,5.7,3.1,13.9-2.7,18.1l4.1,5.5c8.8-6.5,10.6-19,4.1-27.7 c-6.5-8.8-19-10.6-27.7-4.1L42.3,39.6z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="1s" from="0 50 50" to="-360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3Cpath fill="%23e94560" d="M82,35.7C74.1,18,53.4,10.1,35.7,18S10.1,46.6,18,64.3l7.6-3.4c-6-13.5,0-29.3,13.5-35.3s29.3,0,35.3,13.5 L82,35.7z"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" dur="2s" from="0 50 50" to="360 50 50" repeatCount="indefinite" /%3E%3C/path%3E%3C/svg%3E');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  z-index: -1;
+}
+
+.toggle-create-poll {
+  margin-bottom: 20px;
+  background-color: var(--secondary-color);
+}
+
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+@media (max-width: 600px) {
+  .App {
+    padding: 10px;
+  }
+
+  .options-container {
+    flex-direction: column;
+  }
+
+  .option-button {
+    width: 100%;
+  }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import TruffleContract from '@truffle/contract';
 import VotingArtifact from './contracts/Voting.json';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './App.css';
 
 function App() {
@@ -13,6 +13,7 @@ function App() {
   const [newPollOptions, setNewPollOptions] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showResults, setShowResults] = useState({});
 
   useEffect(() => {
     const init = async () => {
@@ -25,9 +26,6 @@ function App() {
         const accs = await web3Instance.eth.getAccounts();
         setAccounts(accs);
 
-        const VotingContract = TruffleContract(VotingArtifact);
-        VotingContract.setProvider(ganacheProvider);
-
         const networkId = await web3Instance.eth.net.getId();
         console.log("Connected to network ID:", networkId);
         
@@ -36,7 +34,10 @@ function App() {
           throw new Error(`Contract not deployed on network ${networkId}`);
         }
 
-        const instance = await VotingContract.at(deployedNetwork.address);
+        const instance = new web3Instance.eth.Contract(
+          VotingArtifact.abi,
+          deployedNetwork.address
+        );
         setVotingContract(instance);
 
         await loadPolls(instance);
@@ -53,15 +54,15 @@ function App() {
 
   const loadPolls = async (contractInstance) => {
     try {
-      const pollCount = await contractInstance.pollCount();
+      const pollCount = await contractInstance.methods.pollCount().call();
       const loadedPolls = [];
-      for (let i = 1; i <= pollCount.toNumber(); i++) {
-        const poll = await contractInstance.getPoll(i);
+      for (let i = 1; i <= pollCount; i++) {
+        const poll = await contractInstance.methods.getPoll(i).call();
         loadedPolls.push({
           id: i,
           question: poll[0],
           options: poll[1],
-          votes: poll[2].map(v => v.toNumber()),
+          votes: poll[2].map(v => parseInt(v)),
           active: poll[3]
         });
       }
@@ -84,7 +85,7 @@ function App() {
     try {
       setLoading(true);
       const options = newPollOptions.split(',').map(option => option.trim());
-      await votingContract.createPoll(newPollQuestion, options, { from: accounts[0], gas: 3000000 });
+      await votingContract.methods.createPoll(newPollQuestion, options).send({ from: accounts[0], gas: 3000000 });
       setNewPollQuestion('');
       setNewPollOptions('');
       await loadPolls(votingContract);
@@ -104,7 +105,7 @@ function App() {
     }
     try {
       setLoading(true);
-      await votingContract.vote(pollId, optionId, { from: accounts[0], gas: 3000000 });
+      await votingContract.methods.vote(pollId, optionId).send({ from: accounts[0], gas: 3000000 });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
@@ -122,7 +123,7 @@ function App() {
     }
     try {
       setLoading(true);
-      await votingContract.closePoll(pollId, { from: accounts[0], gas: 3000000 });
+      await votingContract.methods.closePoll(pollId).send({ from: accounts[0], gas: 3000000 });
       await loadPolls(votingContract);
       setError(null);
     } catch (error) {
@@ -133,12 +134,19 @@ function App() {
     }
   };
 
+  const toggleResults = (pollId) => {
+    setShowResults(prev => ({...prev, [pollId]: !prev[pollId]}));
+  };
+
   return (
     <div className="App">
       <div className="blockchain-background"></div>
-      <h1>DemocraDApp</h1>
+      <header className="App-header">
+        <h1>DemocraDApp</h1>
+        <p>Decentralized Voting Platform</p>
+      </header>
       {error && <p className="error">{error}</p>}
-      {loading && <div className="loading"></div>}
+      {loading && <div className="loading"><div></div><div></div><div></div><div></div></div>}
       <div className="create-poll">
         <h2>Create New Poll</h2>
         <input
@@ -153,28 +161,53 @@ function App() {
           value={newPollOptions}
           onChange={(e) => setNewPollOptions(e.target.value)}
         />
-        <button onClick={createPoll}>Create Poll</button>
+        <button onClick={createPoll} className="create-btn">Create Poll</button>
       </div>
       <div className="active-polls">
         <h2>Active Polls</h2>
-        {polls.map(poll => (
-          <div key={poll.id} className="poll">
-            <h3>{poll.question}</h3>
-            {poll.options.map((option, index) => (
-              <button
-                key={index}
-                className="option-button"
-                onClick={() => vote(poll.id, index)}
-                disabled={!poll.active}
-              >
-                {option} ({poll.votes[index]} votes)
-              </button>
-            ))}
-            {poll.active && (
-              <button className="close-poll-button" onClick={() => closePoll(poll.id)}>Close Poll</button>
-            )}
-          </div>
-        ))}
+        <TransitionGroup>
+          {polls.map(poll => (
+            <CSSTransition key={poll.id} timeout={300} classNames="poll">
+              <div className="poll">
+                <h3>{poll.question}</h3>
+                <div className="options-container">
+                  {poll.options.map((option, index) => (
+                    <button
+                      key={index}
+                      className="option-button"
+                      onClick={() => vote(poll.id, index)}
+                      disabled={!poll.active}
+                    >
+                      {option} 
+                      <span className="vote-count">({poll.votes[index]} votes)</span>
+                    </button>
+                  ))}
+                </div>
+                {poll.active ? (
+                  <button className="close-poll-button" onClick={() => closePoll(poll.id)}>Close Poll</button>
+                ) : (
+                  <button className="show-results-button" onClick={() => toggleResults(poll.id)}>
+                    {showResults[poll.id] ? 'Hide Results' : 'Show Results'}
+                  </button>
+                )}
+                <CSSTransition in={showResults[poll.id]} timeout={300} classNames="results" unmountOnExit>
+                  <div className="results">
+                    <h4>Final Results:</h4>
+                    {poll.options.map((option, index) => (
+                      <div key={index} className="result-bar">
+                        <div className="result-label">{option}: {poll.votes[index]} votes</div>
+                        <div 
+                          className="result-fill" 
+                          style={{width: `${(poll.votes[index] / Math.max(...poll.votes)) * 100}%`}}
+                        ></div>
+                      </div>
+                    ))}
+                  </div>
+                </CSSTransition>
+              </div>
+            </CSSTransition>
+          ))}
+        </TransitionGroup>
       </div>
     </div>
   );
